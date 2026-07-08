@@ -46,7 +46,7 @@
   --ease:cubic-bezier(.16,.84,.44,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%}
 body{
   background:var(--bg);
   color:var(--ink);
@@ -151,6 +151,7 @@ body.gate-locked{overflow:hidden}
   display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-head);font-size:13px;
   letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:16px 30px;border-radius:999px;
   transition:transform .25s var(--ease),box-shadow .25s,background .25s,color .25s;cursor:pointer;border:1px solid transparent;
+  background:none;-webkit-appearance:none;appearance:none;
 }
 .btn-gold{background:var(--gold);color:#1a1305}
 .btn-gold:hover{transform:translateY(-3px);box-shadow:0 14px 34px -10px rgba(242,194,48,.6)}
@@ -412,10 +413,12 @@ body.gate-locked{overflow:hidden}
   .gantt-track{grid-area:track}
   .gantt-label{grid-area:label;font-size:14px;margin-top:-4px}
   .gantt-track{height:40px}
-  .gantt-months{grid-template-columns:1fr;gap:8px}
-  .gantt-months-spacer{display:none}
-  .gantt-months-track{grid-template-columns:repeat(2,1fr)}
-  .gantt-axis-lines{display:none}
+  .gantt-months{grid-template-columns:26px 1fr;gap:18px}
+  .gantt-months-spacer:last-child{display:none}
+  .gantt-months-track{grid-template-columns:repeat(4,1fr);gap:6px}
+  .gantt-months-track span{font-size:9px;padding:7px 0;letter-spacing:.03em}
+  .gantt-axis-lines{grid-template-columns:26px 1fr;gap:18px}
+  .gantt-axis-lines>div:last-child{display:none}
 }
 
 /* ============ PRODUCTION ============ */
