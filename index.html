@@ -759,9 +759,9 @@ body.modal-locked{overflow:hidden}
       <p>Төсөл MESMERISM-ийн өргөн хүрээтэй, эрчимтэй өсөж буй сувгаар дамжин олон нийтэд хүрнэ.</p>
     </div>
 
-    <div class="big-stats">
-      <div class="big-stat reveal"><div class="n" data-count="1139143">0</div><div class="l">Subscribers</div></div>
-      <div class="big-stat reveal" style="transition-delay:.08s"><div class="n" data-count="57989039">0</div><div class="l">Сүүлийн 365 хоногийн үзэлт</div></div>
+    <div class="big-stats" id="channelStats" data-yt-channel="MesmerismOfficialChannel">
+      <div class="big-stat reveal"><div class="n" data-count="1139143" data-yt-stat="subscribers">0</div><div class="l">Subscribers</div></div>
+      <div class="big-stat reveal" style="transition-delay:.08s"><div class="n" data-count="57989039" data-yt-stat="views">0</div><div class="l">Нийт үзэлт</div></div>
       <div class="big-stat reveal" style="transition-delay:.16s"><div class="n" data-count="7" data-suffix="M+">0</div><div class="l">Нийт үзсэн цаг</div></div>
       <div class="big-stat reveal" style="transition-delay:.24s"><div class="n" data-count="98" data-suffix="K">0</div><div class="l">Watch time views (24ц)</div></div>
       <div class="big-stat reveal" style="transition-delay:.32s"><div class="n" data-count="754" data-suffix="K">0</div><div class="l">Unique viewers</div></div>
@@ -798,10 +798,10 @@ body.modal-locked{overflow:hidden}
       <h2 style="font-size:clamp(24px,3vw,32px)">Өмнөх төслүүдийн амжилт</h2>
     </div>
     <div class="proj-grid stagger">
-      <div class="proj-card reveal" style="--i:0"><div class="thumb"><img src="assets/proj-2023.jpg" width="900" height="506" alt="YouTube Champ 2023"></div><div class="info"><div class="t">YouTube Champ 2023</div><div class="v">5,535,496 үзсэн</div></div></div>
-      <div class="proj-card reveal" style="--i:1"><div class="thumb"><img src="assets/proj-2024.jpg" width="900" height="506" alt="YouTube Champ 2024"></div><div class="info"><div class="t">YouTube Champ 2024</div><div class="v">3,034,769 үзсэн</div></div></div>
-      <div class="proj-card reveal" style="--i:2"><div class="thumb"><img src="assets/proj-2025.jpg" width="900" height="506" alt="YouTube Champ 2025"></div><div class="info"><div class="t">YouTube Champ 2025</div><div class="v">2,014,816 үзсэн</div></div></div>
-      <div class="proj-card reveal" style="--i:3"><div class="thumb"><img src="assets/proj-moneydoors.jpg" width="900" height="506" alt="Money Doors"></div><div class="info"><div class="t">Money Doors</div><div class="v">370,256+ үзсэн</div></div></div>
+      <div class="proj-card reveal" style="--i:0"><div class="thumb"><img src="assets/proj-2023.jpg" width="900" height="506" alt="YouTube Champ 2023"></div><div class="info"><div class="t">YouTube Champ 2023</div><div class="v" data-video-id="FsDLwDa-EdQ">5,535,496 үзсэн</div></div></div>
+      <div class="proj-card reveal" style="--i:1"><div class="thumb"><img src="assets/proj-2024.jpg" width="900" height="506" alt="YouTube Champ 2024"></div><div class="info"><div class="t">YouTube Champ 2024</div><div class="v" data-video-id="J77NqV574Cg">3,034,769 үзсэн</div></div></div>
+      <div class="proj-card reveal" style="--i:2"><div class="thumb"><img src="assets/proj-2025.jpg" width="900" height="506" alt="YouTube Champ 2025"></div><div class="info"><div class="t">YouTube Champ 2025</div><div class="v" data-video-id="Tb5p7Qg5M2E">2,014,816 үзсэн</div></div></div>
+      <div class="proj-card reveal" style="--i:3"><div class="thumb"><img src="assets/proj-moneydoors.jpg" width="900" height="506" alt="Money Doors"></div><div class="info"><div class="t">Money Doors</div><div class="v" data-video-id="DXm4xjV9w0A">370,256+ үзсэн</div></div></div>
     </div>
   </div>
 </section>
@@ -1349,6 +1349,51 @@ const countObs = new IntersectionObserver((entries)=>{
   });
 },{threshold:.5});
 counters.forEach(c=>countObs.observe(c));
+
+// live YouTube stats (view counts + subscribers) — falls back to the static
+// numbers already in the markup if the API is unreachable or the key is unset
+(function(){
+  const YT_API_KEY = 'AIzaSyAdmXX-RKz-TcbXD19bHcJFFERGQD0YRvY';
+  const fmt = n => Math.round(n).toLocaleString('en-US');
+
+  const videoEls = document.querySelectorAll('[data-video-id]');
+  const videoIds = [...videoEls].map(el => el.getAttribute('data-video-id'));
+  if(videoIds.length){
+    fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds.join(',')}&key=${YT_API_KEY}`)
+      .then(r => r.json())
+      .then(data => {
+        (data.items || []).forEach(item => {
+          const el = document.querySelector(`[data-video-id="${item.id}"]`);
+          if(el && item.statistics && item.statistics.viewCount){
+            el.textContent = fmt(item.statistics.viewCount) + ' үзсэн';
+          }
+        });
+      })
+      .catch(()=>{});
+  }
+
+  const statsWrap = document.getElementById('channelStats');
+  const channelHandle = statsWrap && statsWrap.getAttribute('data-yt-channel');
+  if(channelHandle){
+    fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&forHandle=${channelHandle}&key=${YT_API_KEY}`)
+      .then(r => r.json())
+      .then(data => {
+        const stats = data.items && data.items[0] && data.items[0].statistics;
+        if(!stats) return;
+        const subEl = statsWrap.querySelector('[data-yt-stat="subscribers"]');
+        const viewEl = statsWrap.querySelector('[data-yt-stat="views"]');
+        if(subEl && stats.subscriberCount){
+          subEl.setAttribute('data-count', stats.subscriberCount);
+          subEl.textContent = fmt(stats.subscriberCount);
+        }
+        if(viewEl && stats.viewCount){
+          viewEl.setAttribute('data-count', stats.viewCount);
+          viewEl.textContent = fmt(stats.viewCount);
+        }
+      })
+      .catch(()=>{});
+  }
+})();
 </script>
 </body>
 </html>
