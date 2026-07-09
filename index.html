@@ -625,6 +625,7 @@ body.modal-locked{overflow:hidden}
 }
 .total-pin:focus, .pdf-pin:focus{outline:none;border-color:var(--gold)}
 .total-lock-locked.shake{animation:gateShake .45s}
+.money-figure{letter-spacing:.06em;user-select:none}
 
 /* pdf download gate popup */
 .pdf-gate-modal{position:fixed;inset:0;z-index:4200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s}
@@ -1393,6 +1394,24 @@ body.modal-locked{overflow:hidden}
 
       <h4 class="doc-h1">8. Төсвийн дэлгэрэнгүй задаргаа</h4>
       <p class="doc-p">Доорх дүн нь 10 хоногийн зураг авалтаар бодогдсон нийт төсөв юм.</p>
+
+      <div class="total-lock" id="totalLock">
+        <div class="total-lock-locked" id="totalLockLocked">
+          <div class="total-lock-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="total-lock-text">
+            <strong>Төсвийн дэлгэрэнгүй дүн нууцлагдсан</strong>
+            <span>Харахын тулд тусгай кодоо оруулна уу.</span>
+          </div>
+          <div class="total-lock-pins">
+            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="0" autocomplete="off">
+            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="1" autocomplete="off">
+            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="2" autocomplete="off">
+            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="3" autocomplete="off">
+          </div>
+        </div>
+      </div>
       <div class="doc-table-wrap">
         <table class="doc-table doc-table-budget">
           <thead><tr><th>Цалин · хүний нөөц</th><th>Дүн (₮)</th></tr></thead>
@@ -1450,24 +1469,7 @@ body.modal-locked{overflow:hidden}
           </tbody>
         </table>
       </div>
-      <div class="total-lock" id="totalLock">
-        <div class="total-lock-locked" id="totalLockLocked">
-          <div class="total-lock-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <div class="total-lock-text">
-            <strong>Нийт төсвийн дүн нууцлагдсан</strong>
-            <span>Харахын тулд тусгай кодоо оруулна уу.</span>
-          </div>
-          <div class="total-lock-pins">
-            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="0" autocomplete="off">
-            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="1" autocomplete="off">
-            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="2" autocomplete="off">
-            <input type="tel" inputmode="numeric" maxlength="1" class="total-pin" data-i="3" autocomplete="off">
-          </div>
-        </div>
-        <p class="doc-total-line" id="totalLine" style="display:none"></p>
-      </div>
+      <p class="doc-total-line" id="totalLine" style="display:none"></p>
 
       <h4 class="doc-h1">9. Ивээн тэтгэгчийн багцууд</h4>
       <p class="doc-p">Нийт 324.6 сая төгрөгийн төсвийг дараах багцуудаар бүрдүүлэхээр төлөвлөж байна. Багцын дүн, эрхийг байгууллагын хэрэгцээнд нийцүүлэн уян хатан тохируулах боломжтой.</p>
@@ -1673,38 +1675,50 @@ body.modal-locked{overflow:hidden}
   }
 })();
 
-// ---- shared budget PIN (9090) — gates the НИЙТ ТӨСӨВ total and PDF download ----
+// ---- shared budget PIN (9090) — gates the full budget breakdown, total and PDF download ----
 const BUDGET_CODE = '9090';
 function isBudgetUnlocked(){ return sessionStorage.getItem('eod_budget_unlocked') === '1'; }
 function setBudgetUnlocked(){ sessionStorage.setItem('eod_budget_unlocked','1'); }
 
-// total-budget reveal (fetches the real figure only after the code is verified,
-// so it never sits in the page's initial HTML/DOM for a plain view-source/F12 look)
-(function(){
+// individual budget-row figures are masked client-side immediately (digits -> •)
+const budgetFigures = document.querySelectorAll('.doc-table-budget td:nth-child(2)');
+budgetFigures.forEach(el=>{
+  el.classList.add('money-figure');
+  el.dataset.real = el.textContent;
+  if(!isBudgetUnlocked()) el.textContent = el.textContent.replace(/[0-9]/g, '•');
+});
+
+// the grand total is never in the initial HTML at all — it's only fetched
+// from a separate file after the code is verified, so a plain view-source/F12
+// Elements look won't reveal it before unlock
+function revealBudgetFigures(){
+  budgetFigures.forEach(el=>{ el.textContent = el.dataset.real; });
   const lockedView = document.getElementById('totalLockLocked');
   const lineEl = document.getElementById('totalLine');
-  if(!lockedView || !lineEl) return;
+  if(!lineEl) return;
+  fetch('assets/data/budget-total.json')
+    .then(r => r.json())
+    .then(data => {
+      lineEl.textContent = data.text;
+      lineEl.style.display = '';
+      if(lockedView) lockedView.style.display = 'none';
+    })
+    .catch(()=>{});
+}
+
+(function(){
+  const lockedView = document.getElementById('totalLockLocked');
+  if(!lockedView) return;
   const pins = [...lockedView.querySelectorAll('.total-pin')];
 
-  function reveal(){
-    fetch('assets/data/budget-total.json')
-      .then(r => r.json())
-      .then(data => {
-        lineEl.textContent = data.text;
-        lineEl.style.display = '';
-        lockedView.style.display = 'none';
-      })
-      .catch(()=>{});
-  }
-
-  if(isBudgetUnlocked()) reveal();
+  if(isBudgetUnlocked()) revealBudgetFigures();
 
   function attempt(){
     const entered = pins.map(p=>p.value).join('');
     if(entered.length < 4) return;
     if(entered === BUDGET_CODE){
       setBudgetUnlocked();
-      reveal();
+      revealBudgetFigures();
     } else {
       lockedView.classList.remove('shake');
       void lockedView.offsetWidth;
@@ -1762,6 +1776,7 @@ function setBudgetUnlocked(){ sessionStorage.setItem('eod_budget_unlocked','1');
     if(entered.length < 4) return;
     if(entered === BUDGET_CODE){
       setBudgetUnlocked();
+      revealBudgetFigures();
       closeGate();
       triggerDownload();
     } else {
