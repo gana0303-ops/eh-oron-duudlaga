@@ -603,7 +603,36 @@ body.modal-locked{overflow:hidden}
   padding:16px 0;letter-spacing:.02em;
 }
 .doc-footer-cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:32px;padding-top:28px;border-top:1px solid var(--line-soft)}
+
+/* money figures blurred until re-verified */
+.docmodal-body:not(.money-unlocked) .doc-table-budget td:nth-child(2),
+.docmodal-body:not(.money-unlocked) .doc-total-line,
+.docmodal-body:not(.money-unlocked) .money-row td:not(:first-child){
+  filter:blur(7px);user-select:none;transition:filter .25s;
+}
+.money-gate{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--gold-dim);
+  border-radius:14px;padding:18px 22px;margin-bottom:20px;
+}
+.docmodal-body.money-unlocked .money-gate{display:none}
+.money-gate-icon{
+  width:42px;height:42px;border-radius:50%;background:rgba(242,194,48,.12);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.money-gate-icon svg{width:20px;height:20px;color:var(--gold)}
+.money-gate-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:180px}
+.money-gate-text strong{font-family:var(--ff-head);font-size:13.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
+.money-gate-text span{font-size:12.5px;color:var(--ink-faint)}
+.money-gate-pins{display:flex;gap:8px}
+.money-pin{
+  width:38px;height:44px;text-align:center;font-family:var(--ff-num);font-size:19px;font-weight:700;color:var(--ink);
+  background:var(--bg-soft);border:1.5px solid var(--line-soft);border-radius:9px;transition:border-color .25s;
+  -webkit-appearance:none;
+}
+.money-pin:focus{outline:none;border-color:var(--gold)}
+.money-gate.shake{animation:gateShake .45s}
 @media(max-width:700px){
+  .docmodal{padding:0}
   .docmodal{padding:0}
   .docmodal-box{max-width:100%;height:100vh;border-radius:0}
   .docmodal-head{padding:18px 18px}
@@ -1352,6 +1381,22 @@ body.modal-locked{overflow:hidden}
       </div>
 
       <h4 class="doc-h1">8. Төсвийн дэлгэрэнгүй задаргаа</h4>
+
+      <div class="money-gate" id="moneyGate">
+        <div class="money-gate-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="money-gate-text">
+          <strong>Төсвийн дүн нууцлагдсан</strong>
+          <span>Харахын тулд нэвтрэх кодоо дахин оруулна уу.</span>
+        </div>
+        <div class="money-gate-pins">
+          <input type="tel" inputmode="numeric" maxlength="1" class="money-pin" data-i="0" autocomplete="off">
+          <input type="tel" inputmode="numeric" maxlength="1" class="money-pin" data-i="1" autocomplete="off">
+          <input type="tel" inputmode="numeric" maxlength="1" class="money-pin" data-i="2" autocomplete="off">
+          <input type="tel" inputmode="numeric" maxlength="1" class="money-pin" data-i="3" autocomplete="off">
+        </div>
+      </div>
       <p class="doc-p">Доорх дүн нь 10 хоногийн зураг авалтаар бодогдсон нийт төсөв юм.</p>
       <div class="doc-table-wrap">
         <table class="doc-table doc-table-budget">
@@ -1418,7 +1463,7 @@ body.modal-locked{overflow:hidden}
         <table class="doc-table doc-table-tiers">
           <thead><tr><th>Ивээн тэтгэгчийн эрх</th><th>Ерөнхий</th><th>Алтан</th><th>Мөнгөн</th><th>Хүрэл</th><th>Дэмжигч</th></tr></thead>
           <tbody>
-            <tr><td>Хөрөнгө оруулалт (₮)</td><td>150 сая+</td><td>80 сая</td><td>40 сая</td><td>20 сая</td><td>Бараа, үйлчилгээ</td></tr>
+            <tr class="money-row"><td>Хөрөнгө оруулалт (₮)</td><td>150 сая+</td><td>80 сая</td><td>40 сая</td><td>20 сая</td><td>Бараа, үйлчилгээ</td></tr>
             <tr><td>&ldquo;Presented by&rdquo; нэрэмжит цол</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
             <tr><td>Нээлт, төгсгөлийн титрт лого</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
             <tr><td>Анги бүрт брэнд дурдагдах</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
@@ -1595,6 +1640,46 @@ body.modal-locked{overflow:hidden}
       document.getElementById('pricing').scrollIntoView({behavior:'smooth'});
     });
   }
+})();
+
+// ---- money-figure re-lock inside the proposal document ----
+(function(){
+  const CODE = '1010';
+  const gate = document.getElementById('moneyGate');
+  const body = document.querySelector('.docmodal-body');
+  if(!gate || !body) return;
+  const pins = [...gate.querySelectorAll('.money-pin')];
+
+  if(sessionStorage.getItem('eod_money_unlocked') === '1'){
+    body.classList.add('money-unlocked');
+  }
+
+  function attempt(){
+    const entered = pins.map(p=>p.value).join('');
+    if(entered.length < 4) return;
+    if(entered === CODE){
+      sessionStorage.setItem('eod_money_unlocked','1');
+      body.classList.add('money-unlocked');
+    } else {
+      gate.classList.remove('shake');
+      void gate.offsetWidth;
+      gate.classList.add('shake');
+      pins.forEach(p=>p.value='');
+      pins[0].focus();
+    }
+  }
+
+  pins.forEach((input, i)=>{
+    input.addEventListener('input', ()=>{
+      input.value = input.value.replace(/[^0-9]/g,'').slice(0,1);
+      if(input.value && pins[i+1]) pins[i+1].focus();
+      if(pins.every(p=>p.value)) attempt();
+    });
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Backspace' && !input.value && pins[i-1]) pins[i-1].focus();
+      if(e.key === 'Enter') attempt();
+    });
+  });
 })();
 
 // nav scroll state
