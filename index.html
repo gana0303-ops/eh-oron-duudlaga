@@ -760,7 +760,7 @@ body.modal-locked{overflow:hidden}
     </div>
 
     <div class="big-stats" id="channelStats" data-yt-channel="MesmerismOfficialChannel">
-      <div class="big-stat reveal"><div class="n" data-count="1139143" data-yt-stat="subscribers">0</div><div class="l">Subscribers</div></div>
+      <div class="big-stat reveal"><div class="n" data-count="1142499">0</div><div class="l">Subscribers</div></div>
       <div class="big-stat reveal" style="transition-delay:.08s"><div class="n" data-count="57989039" data-yt-stat="views">0</div><div class="l">Нийт үзэлт</div></div>
       <div class="big-stat reveal" style="transition-delay:.16s"><div class="n" data-count="7" data-suffix="M+">0</div><div class="l">Нийт үзсэн цаг</div></div>
       <div class="big-stat reveal" style="transition-delay:.24s"><div class="n" data-count="98" data-suffix="K">0</div><div class="l">Watch time views (24ц)</div></div>
@@ -1380,12 +1380,7 @@ counters.forEach(c=>countObs.observe(c));
       .then(data => {
         const stats = data.items && data.items[0] && data.items[0].statistics;
         if(!stats) return;
-        const subEl = statsWrap.querySelector('[data-yt-stat="subscribers"]');
         const viewEl = statsWrap.querySelector('[data-yt-stat="views"]');
-        if(subEl && stats.subscriberCount){
-          subEl.setAttribute('data-count', stats.subscriberCount);
-          subEl.textContent = fmt(stats.subscriberCount);
-        }
         if(viewEl && stats.viewCount){
           viewEl.setAttribute('data-count', stats.viewCount);
           viewEl.textContent = fmt(stats.viewCount);
