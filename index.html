@@ -604,12 +604,9 @@ body.modal-locked{overflow:hidden}
 }
 .doc-footer-cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:32px;padding-top:28px;border-top:1px solid var(--line-soft)}
 
-/* money figures blurred until re-verified */
-.docmodal-body:not(.money-unlocked) .doc-table-budget td:nth-child(2),
-.docmodal-body:not(.money-unlocked) .doc-total-line,
-.docmodal-body:not(.money-unlocked) .money-row td:not(:first-child){
-  filter:blur(7px);user-select:none;transition:filter .25s;
-}
+/* money figures masked until re-verified (text swapped via JS, see .money-figure) */
+.money-figure{transition:color .2s}
+.docmodal-body:not(.money-unlocked) .money-figure{user-select:none;letter-spacing:.06em}
 .money-gate{
   display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--gold-dim);
   border-radius:14px;padding:18px 22px;margin-bottom:20px;
@@ -1388,7 +1385,7 @@ body.modal-locked{overflow:hidden}
         </div>
         <div class="money-gate-text">
           <strong>Төсвийн дүн нууцлагдсан</strong>
-          <span>Харахын тулд нэвтрэх кодоо дахин оруулна уу.</span>
+          <span>Харахын тулд тусгай кодоо оруулна уу.</span>
         </div>
         <div class="money-gate-pins">
           <input type="tel" inputmode="numeric" maxlength="1" class="money-pin" data-i="0" autocomplete="off">
@@ -1644,14 +1641,26 @@ body.modal-locked{overflow:hidden}
 
 // ---- money-figure re-lock inside the proposal document ----
 (function(){
-  const CODE = '1010';
+  const CODE = '9090';
   const gate = document.getElementById('moneyGate');
   const body = document.querySelector('.docmodal-body');
   if(!gate || !body) return;
   const pins = [...gate.querySelectorAll('.money-pin')];
 
+  const figures = document.querySelectorAll('.doc-table-budget td:nth-child(2), .doc-total-line, .money-row td:not(:first-child)');
+  figures.forEach(el=>{
+    el.classList.add('money-figure');
+    el.dataset.real = el.textContent;
+    el.textContent = el.textContent.replace(/[0-9]/g, '•');
+  });
+
+  function reveal(){
+    figures.forEach(el=>{ el.textContent = el.dataset.real; });
+  }
+
   if(sessionStorage.getItem('eod_money_unlocked') === '1'){
     body.classList.add('money-unlocked');
+    reveal();
   }
 
   function attempt(){
@@ -1660,6 +1669,7 @@ body.modal-locked{overflow:hidden}
     if(entered === CODE){
       sessionStorage.setItem('eod_money_unlocked','1');
       body.classList.add('money-unlocked');
+      reveal();
     } else {
       gate.classList.remove('shake');
       void gate.offsetWidth;
