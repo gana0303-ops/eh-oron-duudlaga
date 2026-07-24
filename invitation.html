@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ЭХ ОРНЫ ДУУДЛАГА — Урилга</title>
+<meta name="description" content="Танийг Эх орноо төлөөлөх сорилтод урьж байна. «Эх орны дуудлага» контентод оролцох урилга.">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{
+  font-family:'Mogul Rubic';
+  src:url('assets/fonts/mogul-rubic.ttf') format('truetype');
+  font-weight:400 800;
+  font-display:swap;
+}
+:root{
+  --bg:#08070a;
+  --panel:#151016;
+  --panel-2:#1b141a;
+  --gold:#f2c230;
+  --gold-2:#ffdd6a;
+  --gold-dim:#b6871f;
+  --blue:#3f7fd6;
+  --ink:#f4f0e6;
+  --ink-dim:#b9b3ae;
+  --ink-faint:#7b746f;
+  --line:rgba(255,255,255,.1);
+  --ff-head:'Mogul Rubic','Oswald',sans-serif;
+  --ff-num:'Rajdhani',sans-serif;
+  --ff-body:'Inter',sans-serif;
+  --ease:cubic-bezier(.16,.84,.44,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden;background:var(--bg)}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--ff-body);line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body.lock{overflow:hidden;height:100dvh}
+img{max-width:100%;display:block}
+.wrap{max-width:520px;margin:0 auto;padding:0 22px;width:100%}
+.kicker{
+  display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-head);font-size:11.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;
+}
+.kicker::before{content:'';width:22px;height:2px;background:var(--gold);flex-shrink:0}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--ff-head);font-size:14px;
+  letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:18px 34px;border-radius:999px;
+  background:linear-gradient(135deg,var(--gold-2),var(--gold));color:#1a1305;border:none;cursor:pointer;
+  transition:transform .35s var(--ease),box-shadow .35s;text-decoration:none;position:relative;
+  box-shadow:0 14px 34px -12px rgba(242,194,48,.55);width:100%;max-width:380px;
+}
+.btn:active{transform:scale(.97)}
+@media(hover:hover){.btn:hover{transform:translateY(-3px);box-shadow:0 18px 42px -10px rgba(242,194,48,.7)}}
+.btn.pulse{animation:btnpulse 2.6s ease-in-out infinite}
+@keyframes btnpulse{
+  0%,100%{box-shadow:0 14px 34px -12px rgba(242,194,48,.55)}
+  50%{box-shadow:0 14px 44px -8px rgba(242,194,48,.85)}
+}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ============================= SCENE 1 ============================= */
+#scene1{
+  min-height:100vh;min-height:100dvh;position:relative;display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;text-align:center;isolation:isolate;overflow:hidden;
+  padding:calc(22px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+}
+#scene1::before{
+  content:'';position:absolute;inset:-2%;z-index:-2;background-image:url('assets/urilga-bg-1.jpg');
+  background-size:cover;background-position:center 32%;
+  animation:kenburns 22s ease-in-out infinite alternate;
+}
+#scene1::after{
+  content:'';position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(65% 50% at 50% 8%,rgba(63,127,214,.2),transparent 60%),
+    linear-gradient(180deg,rgba(8,7,10,.62) 0%,rgba(8,7,10,.5) 30%,rgba(8,7,10,.78) 68%,rgba(8,7,10,.97) 100%);
+}
+@keyframes kenburns{from{transform:scale(1.06)}to{transform:scale(1.16)}}
+#scene1.exiting{animation:scene1exit .85s var(--ease) forwards}
+@keyframes scene1exit{
+  0%{filter:brightness(1) saturate(1)}
+  40%{filter:brightness(.5) saturate(1.3)}
+  100%{filter:brightness(0) saturate(1)}
+}
+#scene1.exiting .s1-content,#scene1.exiting .s1-logos,#scene1.exiting .scrolldown{
+  animation:s1fade .6s var(--ease) forwards;
+}
+@keyframes s1fade{to{opacity:0;transform:translateY(-14px) scale(.97)}}
+
+.s1-logos{
+  display:flex;align-items:center;justify-content:center;gap:14px;width:100%;max-width:420px;
+  opacity:0;animation:fadeUp .9s var(--ease) .15s forwards;
+}
+.s1-logos img{height:40px;width:auto;object-fit:contain;flex-shrink:1;min-width:0}
+.s1-logos .lg-center{height:30px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.s1-logos .lg-center img{height:100%}
+.s1-logos .lg-center span{
+  font-family:var(--ff-head);font-weight:700;font-size:12.5px;letter-spacing:.08em;color:var(--gold-2);
+  white-space:nowrap;
+}
+.s1-div{width:1px;height:26px;background:rgba(255,255,255,.18);flex-shrink:0}
+
+.s1-content{max-width:440px}
+.s1-eyebrow{
+  font-family:var(--ff-head);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:20px;opacity:0;animation:fadeUp .9s var(--ease) .35s forwards;
+}
+.s1-line{
+  font-family:var(--ff-head);font-weight:700;text-transform:uppercase;line-height:1.14;
+  font-size:clamp(27px,7.6vw,44px);color:var(--ink);opacity:0;animation:fadeUp .9s var(--ease) forwards;
+  letter-spacing:.005em;
+}
+.s1-line.gold{
+  background:linear-gradient(90deg,var(--gold-2),var(--gold) 55%,var(--gold-dim));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.s1-line:nth-of-type(1){animation-delay:.5s}
+.s1-line:nth-of-type(2){animation-delay:.68s}
+.s1-sub{
+  font-size:14.5px;color:var(--ink-dim);max-width:360px;margin:22px auto 0;line-height:1.85;
+  opacity:0;animation:fadeUp .9s var(--ease) 1s forwards;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+.s1-cta-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;
+  opacity:0;animation:fadeUp .9s var(--ease) 1.3s forwards;
+}
+.scrolldown{
+  display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink-faint);
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:0;
+  animation:fadeUp .9s var(--ease) 1.7s forwards, pulse 2.4s ease-in-out 2.2s infinite;
+}
+.scrolldown svg{width:14px;height:14px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+@keyframes pulse{50%{opacity:.35}}
+
+/* transition flash sweep */
+#flash{
+  position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 60%,rgba(255,221,106,.9),rgba(242,194,48,.35) 40%,transparent 72%);
+}
+#flash.sweep{animation:flashsweep .8s var(--ease) forwards}
+@keyframes flashsweep{
+  0%{opacity:0;transform:scale(.3)}
+  35%{opacity:.85;transform:scale(1.1)}
+  100%{opacity:0;transform:scale(1.6)}
+}
+
+/* ============================= SCENE 2 ============================= */
+#scene2{position:relative;padding:64px 0 70px;isolation:isolate}
+#scene2::before{
+  content:'';position:absolute;inset:0;z-index:-2;background-image:url('assets/urilga-bg-2.jpg');
+  background-size:cover;background-position:center 30%;opacity:.16;
+}
+#scene2::after{
+  content:'';position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,var(--bg) 0%,rgba(8,7,10,.94) 12%,rgba(8,7,10,.97) 100%);
+}
+.s2-head{text-align:center;margin-bottom:38px}
+.s2-logo{width:min(260px,72%);height:auto;margin:0 auto}
+
+.s2-intro{
+  color:var(--ink-dim);font-size:15px;line-height:1.9;text-align:center;margin-bottom:44px;
+  padding:0 4px;
+}
+.s2-intro b{color:var(--ink);font-weight:600}
+
+.selection-head{text-align:center;margin-bottom:28px}
+.selection-head .kicker{justify-content:center;margin-bottom:10px}
+.selection-head h2{
+  font-family:var(--ff-head);font-weight:700;text-transform:uppercase;font-size:clamp(21px,5.6vw,28px);
+  color:var(--ink);
+}
+
+.funnel{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:26px}
+.funnel-stage{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 10px;text-align:center;
+  flex:1 1 0;position:relative;transition:border-color .4s,box-shadow .4s;
+}
+.funnel-stage .n{font-family:var(--ff-num);font-weight:700;font-size:clamp(32px,9vw,42px);color:var(--gold);line-height:1}
+.funnel-stage .l{font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase;margin-top:8px;line-height:1.4}
+.funnel-stage.final .n{color:var(--gold-2)}
+.funnel-stage.final{border-color:var(--gold-dim);box-shadow:0 0 40px -14px rgba(242,194,48,.45)}
+.funnel-arrow{flex:0 0 auto;color:var(--gold-dim);animation:arrowpulse 1.8s ease-in-out infinite}
+.funnel-arrow svg{width:22px;height:22px}
+@keyframes arrowpulse{50%{transform:translateX(3px)}}
+
+.criteria{display:flex;flex-direction:column;gap:10px;margin-bottom:34px}
+.criteria-item{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;
+  font-size:13.5px;color:var(--ink-dim);line-height:1.7;
+}
+.criteria-item b{color:var(--ink);font-weight:600}
+
+.dates{display:flex;gap:10px;margin-bottom:38px}
+.date-card{
+  flex:1 1 0;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;
+  padding:16px 10px;text-align:center;
+}
+.date-card .dl{
+  font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);
+  line-height:1.5;margin-bottom:8px;min-height:2.9em;display:flex;align-items:center;justify-content:center;
+}
+.date-card .dv{font-family:var(--ff-num);font-weight:700;font-size:19px;color:var(--gold-2);letter-spacing:.02em}
+
+.s2-cta{display:flex;flex-direction:column;align-items:center;gap:14px}
+.s2-cta p{font-size:12.5px;color:var(--ink-faint);text-align:center}
+
+/* ============================= REGISTER MODAL ============================= */
+.modal{position:fixed;inset:0;z-index:300;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.modal-backdrop{position:absolute;inset:0;background:rgba(4,3,5,.78);backdrop-filter:blur(3px);opacity:0}
+.modal.open .modal-backdrop{animation:backdropIn .35s var(--ease) forwards}
+@keyframes backdropIn{to{opacity:1}}
+.modal-box{
+  position:relative;background:var(--panel);border:1px solid var(--line);border-radius:22px 22px 0 0;
+  width:100%;max-width:480px;max-height:92dvh;overflow-y:auto;padding:28px 24px calc(28px + env(safe-area-inset-bottom));
+  transform:translateY(100%);
+}
+.modal.open .modal-box{animation:sheetIn .45s var(--ease) forwards}
+@keyframes sheetIn{to{transform:translateY(0)}}
+@media(min-width:560px){
+  .modal{align-items:center}
+  .modal-box{border-radius:22px;transform:translateY(24px) scale(.97);opacity:0}
+  .modal.open .modal-box{animation:dialogIn .4s var(--ease) forwards}
+  @keyframes dialogIn{to{transform:translateY(0) scale(1);opacity:1}}
+}
+.modal-close{
+  position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);color:var(--ink-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.modal-close svg{width:16px;height:16px}
+.modal-title{font-family:var(--ff-head);font-weight:700;text-transform:uppercase;font-size:24px;text-align:center;margin-bottom:6px;letter-spacing:.02em}
+.modal-sub{font-size:13.5px;color:var(--ink-faint);text-align:center;margin-bottom:26px}
+.field{display:block;margin-bottom:16px}
+.field span{display:block;font-family:var(--ff-head);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:8px;font-weight:600}
+.field input,.field select{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;
+  padding:14px 15px;font-size:15px;color:var(--ink);font-family:var(--ff-body);outline:none;
+  transition:border-color .25s,background .25s;appearance:none;-webkit-appearance:none;
+}
+.field select{
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237b746f" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');
+  background-repeat:no-repeat;background-position:right 14px center;background-size:16px;padding-right:40px;
+}
+.field select:invalid{color:var(--ink-faint)}
+.field input::placeholder{color:var(--ink-faint)}
+.field input:focus,.field select:focus{border-color:var(--gold-dim);background:rgba(242,194,48,.06)}
+.modal-submit{margin-top:6px}
+.modal-success{text-align:center;padding:10px 0 4px}
+.modal-success-icon{
+  width:64px;height:64px;border-radius:50%;background:rgba(242,194,48,.12);border:1px solid var(--gold-dim);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:var(--gold)
+}
+.modal-success-icon svg{width:30px;height:30px}
+.btn-ghost{
+  background:transparent;border:1px solid var(--line);color:var(--ink-dim);box-shadow:none;margin-top:20px;
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  #scene1::before{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div id="flash"></div>
+
+<!-- ============ SCENE 1 — THE INVITATION ARRIVES ============ -->
+<section id="scene1">
+  <div class="s1-logos">
+    <img src="assets/partner-1.png" alt="Батлан хамгаалах яамны Барилга захиалагчийн алба ТӨААТҮГ">
+    <div class="s1-div"></div>
+    <div class="lg-center"><img src="assets/logo.png" alt="MESMERISM"><span>MESMERISM</span></div>
+    <div class="s1-div"></div>
+    <img src="assets/partner-2.png" alt="Хуурай замын цэргийн командлал">
+  </div>
+
+  <div class="s1-content">
+    <div class="s1-eyebrow">Монгол улсын нэрийн өмнөөс</div>
+    <h1 class="s1-line">Таныг эх орноо төлөөлөх</h1>
+    <h1 class="s1-line gold">сорилтод урьж байна.</h1>
+    <p class="s1-sub">Энэ бол зүгээр нэг content биш — өөрийгөө таньж, эх орноо илүү ойлгож, түүх бичих боломж.</p>
+  </div>
+
+  <div class="s1-cta-wrap">
+    <a href="#scene2" id="toScene2Btn" class="btn pulse">Урилга хүлээн авах</a>
+    <div class="scrolldown">
+      доош гүйлгэх
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCENE 2 — THE DETAILS ============ -->
+<section id="scene2">
+  <div class="wrap">
+    <div class="s2-head reveal">
+      <img src="assets/eh-oron-wordmark.png" alt="ЭХ ОРНЫ ДУУДЛАГА" class="s2-logo">
+    </div>
+
+    <p class="s2-intro reveal">&ldquo;Эх орны дуудлага&rdquo; бол олны танил 30 оролцогчийг сориптод оруулж, 10 оролцогчийг сонгон цэргийн ангид байрлан, есөн өдрийн турш цэргийн бэлтгэлд хамрагдаж эх орны сүүлчийн даалгаврыг хамтдаа биелүүлэх цэргийн реалити контент юм.</p>
+
+    <div class="selection-head reveal">
+      <div class="kicker">Оролцох алхам</div>
+      <h2>Сонгон шалгаруулалт</h2>
+    </div>
+
+    <div class="funnel reveal" id="funnel">
+      <div class="funnel-stage">
+        <div class="n" data-count="30">0</div>
+        <div class="l">Урьдчилсан сонголт</div>
+      </div>
+      <div class="funnel-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+      <div class="funnel-stage final">
+        <div class="n" data-count="10">0</div>
+        <div class="l">Эцсийн оролцогч</div>
+      </div>
+    </div>
+
+    <div class="criteria">
+      <div class="criteria-item reveal">Эхлээд <b>30 хүнийг</b> урьдчилан сонгоно.</div>
+      <div class="criteria-item reveal">Урьдчилсан шалгаруулалт нь <b>тэсвэр тэвчээр, биеийн хүчний шалгуурт</b> суурилна.</div>
+      <div class="criteria-item reveal">Эцэст нь эдгээрээс <b>10 хүнийг сонгож</b>, цаашдын контентод оролцуулна.</div>
+    </div>
+
+    <div class="dates reveal">
+      <div class="date-card">
+        <div class="dl">Эхний сорилт зураг авалт</div>
+        <div class="dv">VIII/1 - VIII/2</div>
+      </div>
+      <div class="date-card">
+        <div class="dl">Үндсэн зураг авалт</div>
+        <div class="dv">VIII/10 - VIII/20</div>
+      </div>
+    </div>
+
+    <div class="s2-cta reveal">
+      <button type="button" class="btn pulse" id="openRegBtn">Сорилтод бүртгүүлэх</button>
+      <p>Асуулт байвал: 9904-3988 &nbsp;·&nbsp; mesmerismcomedy@gmail.com</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REGISTER MODAL ============ -->
+<div class="modal" id="regModal">
+  <div class="modal-backdrop" id="regBackdrop"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="regClose" type="button" aria-label="close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="regFormView">
+      <h3 class="modal-title">Бүртгүүлэх</h3>
+      <p class="modal-sub">Мэдээллээ үлдээгээрэй — бид тантай эргэн холбогдоно.</p>
+      <form id="regForm">
+        <label class="field">
+          <span>Овог нэр</span>
+          <input type="text" name="fullname" required placeholder="Овог, нэр">
+        </label>
+        <label class="field">
+          <span>Nickname</span>
+          <input type="text" name="nickname" placeholder="Nickname">
+        </label>
+        <label class="field">
+          <span>Утас</span>
+          <input type="tel" name="phone" inputmode="tel" required placeholder="9911-2233">
+        </label>
+        <label class="field">
+          <span>И-мэйл хаяг</span>
+          <input type="email" name="email" required placeholder="name@mail.com">
+        </label>
+        <label class="field">
+          <span>Хувцасны размер</span>
+          <select name="size" required>
+            <option value="" disabled selected>XL, L, M...</option>
+            <option value="XS">XS</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select>
+        </label>
+        <button type="submit" class="btn modal-submit">Бүртгүүлэх</button>
+      </form>
+    </div>
+    <div id="regSuccessView" class="modal-success" style="display:none">
+      <div class="modal-success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 class="modal-title">Баярлалаа!</h3>
+      <p class="modal-sub">Таны бүртгэл амжилттай хүлээн авлаа. Бид тантай удахгүй холбогдоно.</p>
+      <button type="button" class="btn btn-ghost" id="regDoneBtn">Хаах</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- scene1 -> scene2 animated transition ----
+(function(){
+  var btn = document.getElementById('toScene2Btn');
+  var scene1 = document.getElementById('scene1');
+  var scene2 = document.getElementById('scene2');
+  var flash = document.getElementById('flash');
+  var done = false;
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    if(done) return;
+    done = true;
+    scene1.classList.add('exiting');
+    setTimeout(function(){ flash.classList.add('sweep'); }, 250);
+    setTimeout(function(){
+      scene2.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 520);
+  });
+})();
+
+// ---- scroll reveal ----
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry, i){
+      if(entry.isIntersecting){
+        setTimeout(function(){ entry.target.classList.add('in'); }, i * 90);
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.2, rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(el){ io.observe(el); });
+})();
+
+// ---- funnel number count-up ----
+(function(){
+  var funnel = document.getElementById('funnel');
+  var nums = funnel.querySelectorAll('.n');
+  var fired = false;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !fired){
+        fired = true;
+        nums.forEach(function(el){
+          var target = parseInt(el.getAttribute('data-count'), 10);
+          var start = performance.now();
+          var dur = 1100;
+          function tick(now){
+            var p = Math.min(1, (now - start) / dur);
+            var eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(eased * target);
+            if(p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+        io.unobserve(funnel);
+      }
+    });
+  }, {threshold:.4});
+  io.observe(funnel);
+})();
+
+// ---- register modal ----
+(function(){
+  var modal = document.getElementById('regModal');
+  var backdrop = document.getElementById('regBackdrop');
+  var closeBtn = document.getElementById('regClose');
+  var doneBtn = document.getElementById('regDoneBtn');
+  var openBtn = document.getElementById('openRegBtn');
+  var form = document.getElementById('regForm');
+  var formView = document.getElementById('regFormView');
+  var successView = document.getElementById('regSuccessView');
+
+  function openModal(){
+    formView.style.display = '';
+    successView.style.display = 'none';
+    form.reset();
+    modal.classList.add('open');
+    document.body.classList.add('lock');
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+    document.body.classList.remove('lock');
+  }
+  openBtn.addEventListener('click', openModal);
+  backdrop.addEventListener('click', closeModal);
+  closeBtn.addEventListener('click', closeModal);
+  doneBtn.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+  var submitBtn = form.querySelector('.modal-submit');
+  var submitLabel = submitBtn.textContent;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var data = new FormData(form);
+    data.append('access_key', '61e1c741-80fb-49c2-be27-206925b12994');
+    data.append('subject', 'Сорилтод бүртгүүлэх хүсэлт — ' + (data.get('fullname') || ''));
+    data.append('from_name', 'Эх орны дуудлага — Урилга');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Илгээж байна...';
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: data,
+      headers: {'Accept': 'application/json'}
+    }).then(function(res){ return res.json(); }).then(function(json){
+      if(!json.success) throw new Error('request failed');
+      formView.style.display = 'none';
+      successView.style.display = '';
+    }).catch(function(){
+      alert('Илгээхэд алдаа гарлаа. Дахин оролдоно уу, эсвэл 9904-3988 дугаарт залгана уу.');
+    }).finally(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = submitLabel;
+    });
+  });
+})();
+</script>
+
+<script data-goatcounter="https://gantogtokh.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
