@@ -64,11 +64,12 @@ img{max-width:100%;display:block}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .reveal.in{opacity:1;transform:translateY(0)}
 
-/* ============================= SCENE 1 ============================= */
+/* ============================= SCENE 1 (fixed popup) ============================= */
 #scene1{
-  min-height:100vh;min-height:100dvh;position:relative;display:flex;flex-direction:column;
+  position:fixed;inset:0;z-index:150;height:100dvh;display:flex;flex-direction:column;
   align-items:center;justify-content:space-between;text-align:center;isolation:isolate;overflow:hidden;
   padding:calc(22px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+  transform-origin:50% 100%;will-change:transform,filter,opacity;
 }
 #scene1::before{
   content:'';position:absolute;inset:-2%;z-index:-2;background-image:url('assets/urilga-bg-1.jpg');
@@ -82,16 +83,25 @@ img{max-width:100%;display:block}
     linear-gradient(180deg,rgba(8,7,10,.62) 0%,rgba(8,7,10,.5) 30%,rgba(8,7,10,.78) 68%,rgba(8,7,10,.97) 100%);
 }
 @keyframes kenburns{from{transform:scale(1.06)}to{transform:scale(1.16)}}
-#scene1.exiting{animation:scene1exit .85s var(--ease) forwards}
-@keyframes scene1exit{
-  0%{filter:brightness(1) saturate(1)}
-  40%{filter:brightness(.5) saturate(1.3)}
-  100%{filter:brightness(0) saturate(1)}
+#scene1.imploding{animation:blackholeSuck .95s cubic-bezier(.7,0,.84,0) forwards}
+@keyframes blackholeSuck{
+  0%{transform:scale(1) rotate(0deg);filter:brightness(1) saturate(1) blur(0);opacity:1}
+  55%{transform:scale(.48) rotate(-8deg);filter:brightness(.3) saturate(1.6) blur(1px);opacity:1}
+  100%{transform:scale(.015) rotate(-32deg);filter:brightness(0) blur(12px);opacity:0}
 }
-#scene1.exiting .s1-content,#scene1.exiting .s1-logos,#scene1.exiting .scrolldown{
-  animation:s1fade .6s var(--ease) forwards;
+#hole{
+  position:fixed;z-index:160;width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,var(--gold-2) 35%,var(--gold) 60%,transparent 75%);
+  left:0;top:0;transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none;
+  box-shadow:0 0 40px 10px rgba(242,194,48,.8);
 }
-@keyframes s1fade{to{opacity:0;transform:translateY(-14px) scale(.97)}}
+#hole.pop{animation:holepop 1s var(--ease) forwards}
+@keyframes holepop{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+  12%{transform:translate(-50%,-50%) scale(1.3);opacity:1}
+  45%{transform:translate(-50%,-50%) scale(.6);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(48);opacity:0}
+}
 
 .s1-logos{
   display:flex;align-items:center;justify-content:center;gap:14px;width:100%;max-width:420px;
@@ -132,26 +142,7 @@ img{max-width:100%;display:block}
   display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;
   opacity:0;animation:fadeUp .9s var(--ease) 1.3s forwards;
 }
-.scrolldown{
-  display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink-faint);
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:0;
-  animation:fadeUp .9s var(--ease) 1.7s forwards, pulse 2.4s ease-in-out 2.2s infinite;
-}
-.scrolldown svg{width:14px;height:14px;animation:bob 1.6s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(4px)}}
 @keyframes pulse{50%{opacity:.35}}
-
-/* transition flash sweep */
-#flash{
-  position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;
-  background:radial-gradient(circle at 50% 60%,rgba(255,221,106,.9),rgba(242,194,48,.35) 40%,transparent 72%);
-}
-#flash.sweep{animation:flashsweep .8s var(--ease) forwards}
-@keyframes flashsweep{
-  0%{opacity:0;transform:scale(.3)}
-  35%{opacity:.85;transform:scale(1.1)}
-  100%{opacity:0;transform:scale(1.6)}
-}
 
 /* ============================= SCENE 2 ============================= */
 #scene2{position:relative;padding:64px 0 70px;isolation:isolate}
@@ -164,6 +155,7 @@ img{max-width:100%;display:block}
   background:linear-gradient(180deg,var(--bg) 0%,rgba(8,7,10,.94) 12%,rgba(8,7,10,.97) 100%);
 }
 .s2-head{text-align:center;margin-bottom:38px}
+.s2-logos{margin:0 auto 30px}
 .s2-logo{width:min(260px,72%);height:auto;margin:0 auto}
 
 .s2-intro{
@@ -270,11 +262,13 @@ img{max-width:100%;display:block}
 }
 </style>
 </head>
-<body>
+<body class="lock">
 
-<div id="flash"></div>
+<div id="hole"></div>
+<audio id="sfx1" src="assets/sfx-1.mp3" preload="auto"></audio>
+<audio id="sfx2" src="assets/sfx-2.mp3" preload="auto"></audio>
 
-<!-- ============ SCENE 1 — THE INVITATION ARRIVES ============ -->
+<!-- ============ SCENE 1 — THE INVITATION ARRIVES (popup) ============ -->
 <section id="scene1">
   <div class="s1-logos">
     <img src="assets/partner-1.png" alt="Батлан хамгаалах яамны Барилга захиалагчийн алба ТӨААТҮГ">
@@ -293,10 +287,6 @@ img{max-width:100%;display:block}
 
   <div class="s1-cta-wrap">
     <a href="#scene2" id="toScene2Btn" class="btn pulse">Урилга хүлээн авах</a>
-    <div class="scrolldown">
-      доош гүйлгэх
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
   </div>
 </section>
 
@@ -304,6 +294,13 @@ img{max-width:100%;display:block}
 <section id="scene2">
   <div class="wrap">
     <div class="s2-head reveal">
+      <div class="s1-logos s2-logos">
+        <img src="assets/partner-1.png" alt="Батлан хамгаалах яамны Барилга захиалагчийн алба ТӨААТҮГ">
+        <div class="s1-div"></div>
+        <div class="lg-center"><img src="assets/logo.png" alt="MESMERISM"><span>MESMERISM</span></div>
+        <div class="s1-div"></div>
+        <img src="assets/partner-2.png" alt="Хуурай замын цэргийн командлал">
+      </div>
       <img src="assets/eh-oron-wordmark.png" alt="ЭХ ОРНЫ ДУУДЛАГА" class="s2-logo">
     </div>
 
@@ -347,7 +344,7 @@ img{max-width:100%;display:block}
 
     <div class="s2-cta reveal">
       <button type="button" class="btn pulse" id="openRegBtn">Сорилтод бүртгүүлэх</button>
-      <p>Асуулт байвал: 9904-3988 &nbsp;·&nbsp; mesmerismcomedy@gmail.com</p>
+      <p>Асуулт байвал: 9904-3988, 8810-4706 &nbsp;·&nbsp; mesmerismcomedy@gmail.com</p>
     </div>
   </div>
 </section>
@@ -370,6 +367,10 @@ img{max-width:100%;display:block}
         <label class="field">
           <span>Nickname</span>
           <input type="text" name="nickname" placeholder="Nickname">
+        </label>
+        <label class="field">
+          <span>Мэргэжил</span>
+          <input type="text" name="profession" required placeholder="Таны мэргэжил">
         </label>
         <label class="field">
           <span>Утас</span>
@@ -406,22 +407,30 @@ img{max-width:100%;display:block}
 </div>
 
 <script>
-// ---- scene1 -> scene2 animated transition ----
+// ---- scene1 -> scene2 black-hole transition ----
 (function(){
   var btn = document.getElementById('toScene2Btn');
   var scene1 = document.getElementById('scene1');
-  var scene2 = document.getElementById('scene2');
-  var flash = document.getElementById('flash');
+  var hole = document.getElementById('hole');
+  var sfx1 = document.getElementById('sfx1');
   var done = false;
   btn.addEventListener('click', function(e){
     e.preventDefault();
     if(done) return;
     done = true;
-    scene1.classList.add('exiting');
-    setTimeout(function(){ flash.classList.add('sweep'); }, 250);
+    var r = btn.getBoundingClientRect();
+    var px = r.left + r.width / 2;
+    var py = r.top + r.height / 2;
+    scene1.style.transformOrigin = (px / window.innerWidth * 100) + '% ' + (py / window.innerHeight * 100) + '%';
+    hole.style.left = px + 'px';
+    hole.style.top = py + 'px';
+    try{ sfx1.currentTime = 0; sfx1.play(); }catch(err){}
+    scene1.classList.add('imploding');
+    setTimeout(function(){ hole.classList.add('pop'); }, 120);
     setTimeout(function(){
-      scene2.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 520);
+      scene1.style.display = 'none';
+      document.body.classList.remove('lock');
+    }, 1000);
   });
 })();
 
@@ -497,9 +506,11 @@ img{max-width:100%;display:block}
 
   var submitBtn = form.querySelector('.modal-submit');
   var submitLabel = submitBtn.textContent;
+  var sfx2 = document.getElementById('sfx2');
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
+    try{ sfx2.currentTime = 0; sfx2.play(); }catch(err){}
     var data = new FormData(form);
     data.append('access_key', '61e1c741-80fb-49c2-be27-206925b12994');
     data.append('subject', 'Сорилтод бүртгүүлэх хүсэлт — ' + (data.get('fullname') || ''));
@@ -515,7 +526,7 @@ img{max-width:100%;display:block}
       formView.style.display = 'none';
       successView.style.display = '';
     }).catch(function(){
-      alert('Илгээхэд алдаа гарлаа. Дахин оролдоно уу, эсвэл 9904-3988 дугаарт залгана уу.');
+      alert('Илгээхэд алдаа гарлаа. Дахин оролдоно уу, эсвэл 9904-3988, 8810-4706 дугаарт залгана уу.');
     }).finally(function(){
       submitBtn.disabled = false;
       submitBtn.textContent = submitLabel;
