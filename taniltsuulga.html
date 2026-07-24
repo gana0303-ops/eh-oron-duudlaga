@@ -897,18 +897,7 @@ body.modal-locked{overflow:hidden}
       <h2>Урьдчилсан <span class="accent">байдлаар</span></h2>
       <p>Төрөл бүрийн салбарын нэр хүндтэй, олны танил хүмүүс нэгдэнэ.</p>
     </div>
-    <div class="part-grid stagger">
-      <div class="part-card reveal" style="--i:0"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Жүжигчин</div></div>
-      <div class="part-card reveal" style="--i:1"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Үндэсний бөх</div></div>
-      <div class="part-card reveal" style="--i:2"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Дуучин</div></div>
-      <div class="part-card reveal" style="--i:3"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Багш, Доктор, Профессор</div></div>
-      <div class="part-card reveal" style="--i:4"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Мэргэжлийн тамирчин</div></div>
-      <div class="part-card reveal" style="--i:5"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Олимпын тамирчин</div></div>
-      <div class="part-card reveal" style="--i:6"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Streamer</div></div>
-      <div class="part-card reveal" style="--i:7"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">YouTuber</div></div>
-      <div class="part-card reveal" style="--i:8"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Бүжигчин</div></div>
-      <div class="part-card reveal" style="--i:9"><div class="silhouette"><img src="assets/participant-silhouette.png" width="500" height="737" alt=""></div><div class="name">Жүжигчин</div></div>
-    </div>
+    <div class="part-grid stagger" id="partPreviewGrid"></div>
     <div class="part-viewall reveal">
       <button type="button" class="btn btn-ghost" id="openParticipantsBtn">Бүх оролцогчдыг харах</button>
     </div>
@@ -1092,6 +1081,19 @@ body.modal-locked{overflow:hidden}
 <div class="totop" id="totop"><svg><use href="#i-up"/></svg></div>
 
 <script>
+// mirror the first 5 participants from the full list into the front-page preview,
+// so there's a single place (the popup's 30 cards) to edit names/photos/roles
+(function(){
+  const preview = document.getElementById('partPreviewGrid');
+  const modalCards = document.querySelectorAll('#participantsModal .part-card');
+  if(!preview || !modalCards.length) return;
+  [...modalCards].slice(0,5).forEach((card, i)=>{
+    const clone = card.cloneNode(true);
+    clone.style.setProperty('--i', i);
+    preview.appendChild(clone);
+  });
+})();
+
 // nav scroll state
 const nav = document.getElementById('nav');
 const progress = document.getElementById('progress');
